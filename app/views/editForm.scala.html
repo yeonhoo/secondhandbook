@@ -1,0 +1,54 @@
+@(id: Long, bookForm: Form[Book], publishers: Seq[(String, String)])(implicit requestHeader: MessagesRequestHeader)
+
+
+@import views.html.helper._
+
+    @*
+    @bookForm.data.toString
+    </br></br></br>
+
+    @bookForm("imgKey").value.getOrElse("")
+    *@
+
+
+    <h1>Edit book</h1>
+    
+    @form(routes.MainController.update(id)) {
+        
+        <fieldset>
+            @CSRF.formField
+            @inputText(bookForm("name"), '_label -> "Name", '_help -> "")
+            @inputText(bookForm("author"), '_label -> "Author", '_help -> "")
+            @inputText(bookForm("price"), '_label -> "Price", '_help -> "")
+            @textarea(bookForm("description"), args = 'rows -> 5, 'cols -> 50, '_label -> "Description", '_help -> "")
+
+
+            @*
+                @inputText(bookForm("imgKey"), '_label -> "Price", '_help -> "")
+            *@
+
+            @*
+            @select(
+                bookForm("publisher"),
+                publishers,
+                '_label -> "Publisher", '_default -> "-- Choose a publisher --",
+                '_showConstraints -> false
+            )
+            *@
+
+        </fieldset>
+
+           @* how to implement pictures edit function *@
+
+        <div class="actions">
+            <input type="submit" value="Save this book" class="btn primary"> or
+            <a href="@routes.MainController.list()" class="btn">Cancel</a>
+        </div>
+        
+    }
+    
+    @form(routes.MainController.delete(id), 'class -> "topRight") {
+        @CSRF.formField
+        <input type="submit" value="Delete this book" class="btn danger mt-4 mt-sm-4">
+    }
+

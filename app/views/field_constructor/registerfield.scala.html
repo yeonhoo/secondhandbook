@@ -1,0 +1,39 @@
+@(elements: helper.FieldElements)
+
+@*_
+<div class="@if(elements.hasErrors) {error}">
+    <label for="@elements.id">@elements.label</label>
+    <div class="input">
+        @elements.input
+        <span class="errors">@elements.errors.mkString(", ")</span>
+        <span class="help">@elements.infos.mkString(", ")</span>
+    </div>
+</div>
+*@
+
+<div class="row">
+    <div class="col-md-3 field-label-responsive">
+        <label for="@elements.id">@elements.label @*Name*@</label>
+    </div>
+    <div class="col-md-6">
+        <div class="form-group">
+            <div class="input-group mb-2 mr-sm-2 mb-sm-0">
+                <div class="input-group-addon" style="width: 2.6rem"><i class="fa fa-user"></i></div>
+
+                @elements.input
+                @*
+                    <input type="text" name="name" class="form-control" id="name"
+                        placeholder="John Doe" required autofocus>
+                *@
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="form-control-feedback">
+            <span class="text-danger align-middle">
+                <span class="errors">@elements.errors.mkString(", ")</span>
+                <span class="help">@elements.infos.mkString(", ")</span>
+            </span>
+        </div>
+    </div>
+</div>

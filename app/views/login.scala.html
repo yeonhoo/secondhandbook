@@ -1,0 +1,38 @@
+@(loginForm: Form[(String, String)])(implicit flash: Flash, request: MessagesRequestHeader)
+
+    <div class="well">
+    @helper.form(helper.CSRF(routes.MainController.authenticate)) {
+        <h2>Sign in</h2>
+
+        @loginForm.globalError.map { error =>
+            <p class="error">
+                @error.message
+            </p>
+        }
+
+        @flash.get("success").map { message =>
+            <p class="success">
+                @message
+            </p>
+        }
+
+        <p>
+            <input type="email" name="email" placeholder="Email" id="email" value='@loginForm("email").value'>
+        </p>
+        <p>
+            <input type="password" name="password" id="password" placeholder="Password">
+            @loginForm.error("password").map { error =>
+                <p class="error">
+                    @error.withMessage("Invalid Password").messages
+                </p>
+            }
+        </p>
+        <p>
+            <button type="submit" id="loginbutton">Login</button>
+        </p>
+    }
+    </div>
+
+    <script type="text/javascript">
+            $("#email").focus();
+    </script>

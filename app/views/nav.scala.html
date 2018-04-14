@@ -1,0 +1,57 @@
+@(user: Option[String] = None)(loginForm: Form[(String, String)])(implicit flash: Flash, request: MessagesRequestHeader)
+
+<nav class="navbar navbar-expand-md navbar-light bg-light">
+    <a href="/" class="navbar-brand">Book Store</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar7">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="navbar-collapse collapse justify-content-stretch" id="navbar7">
+        <ul class="navbar-nav ml-auto">
+
+            @if(user.isDefined) {
+                Hi @user.get
+                <a class="btn btn-link" href="@routes.MainController.userItems()" role="button">My books</a>
+                <a class="btn btn-link" href="@routes.MainController.addBookPage()" role="button">Add a book</a>
+                <a class="btn btn-info" href="@routes.MainController.logout()" role="button">Log out</a>
+            } else {
+                @helper.form(helper.CSRF(routes.MainController.authenticate), 'class -> "form-inline") {
+
+                    @loginForm.globalError.map { error =>
+                        <p class="error">
+                            @error.message
+                        </p>
+                    }
+
+                    @flash.get("success").map { message =>
+                        <p class="success">
+                            @message
+                        </p>
+                    }
+
+                    @* email *@
+                    <div class="input-group mb-2 mr-sm-2">
+                        <label for="inputEmail">Email : </label>
+                        <input class="form-control" type="email" name="email" placeholder="Email" id="email" value='@loginForm("email").value' >
+                    </div>
+
+                    @* passwd *@
+                    <div class="input-group mb-2 mr-sm-2">
+                        <label for="inputPw">Password : </label>
+                        <input  class="form-control" type="password" name="password" id="password">
+                    </div>
+                    @* login btn *@
+                    <button type="submit" class="btn btn-primary mb-2 mr-sm-2">Login</button>
+
+                    @* signup btn *@
+                    <a href="@routes.MainController.registerPage()" role="button" class="btn btn-info  mb-2 mr-sm-2" >Sign Up</a>
+
+                }
+            }
+
+
+
+
+
+        </ul>
+    </div>
+</nav>

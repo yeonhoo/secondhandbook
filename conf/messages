@@ -1,0 +1,22 @@
+# Messages
+home.title=hallo
+# computers.list.title={0,choice,0#No computers|1#One computer|1<{0,number,integer} computers} found
+
+books.list.title={0,choice,0#No books|1#One book|1<{0,number,integer} books} found
+
+books.list.pagination = Displaying {0} to {1} of {2}
+books.list.pagination.prev = Previous
+books.list.pagination.next = Next
+books.list.pagination.nothing = Nothing to display
+
+application.name = Book Store
+
+book.name = Name
+book.price = Price
+book.image = Image
+book.publisher = Publisher
+book.author = Author
+
+
+book.list.filter.placeholder = Search book by name...
+book.list.filter.button = Search by name

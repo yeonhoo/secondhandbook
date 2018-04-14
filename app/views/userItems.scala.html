@@ -1,0 +1,149 @@
+@(currentPage: Page[(Book, Option[Publisher])], currentOrderBy: Int, currentFilter: String)(imgAddr: String)(implicit user: Option[String] = None, request: MessagesRequestHeader)
+
+@import helper._
+
+
+@userFun(user: Option[String]) = @{ user }
+
+
+    @****************************************
+    * Helper generating navigation links    *
+    ****************************************@
+@link(newPage: Int, newOrderBy: Option[Int] = None) = @{
+    routes.MainController.list(newPage, newOrderBy.map { orderBy =>
+        if(orderBy == scala.math.abs(currentOrderBy)) -currentOrderBy else orderBy
+    }.getOrElse(currentOrderBy), currentFilter)
+
+}
+
+    @**********************************
+    * Helper generating table headers *
+    ***********************************@
+@header(orderBy: Int, title: String) = {
+    <th class="col@orderBy header @if(scala.math.abs(currentOrderBy) == orderBy) { @{if(currentOrderBy < 0) "headerSortDown" else "headerSortUp"} }">
+        <a href="@link(0, Some(orderBy))">@title</a>
+    </th>
+}
+
+
+
+<h1 id="section-title">@Messages("books.list.title", currentPage.total) @request.messages.lang</h1>
+<h2>my books</h2>
+@request.flash.get("success").map { message =>
+    <div class="alert-message warning">
+        <strong>Done!</strong> @message
+    </div>
+}
+
+<div>
+
+    @* user info retrieve *@
+    @*
+    @if(user.isDefined) {
+    <a class="btn success">@user.getOrElse("")</a>
+    <a class="btn success" id="add" href="@routes.HomeController.addBook()">Add a new book</a>
+    <a class="btn success" href="@routes.HomeController.logout()">Log out</a>
+    } else {
+    <a class="btn success" href="@routes.HomeController.login()">Login</a>
+    }
+    *@
+
+</div>
+
+@Option(currentPage.items).filterNot(_.isEmpty).map { books =>
+
+<table class="table table-striped table-sm">
+    <thead>
+        <tr>
+            <th scope="col">@Messages("book.image")</th>
+            <th scope="col">@Messages("book.name")</th>
+            <th scope="col">@Messages("book.author")</th>
+            <th scope="col">@Messages("book.price")</th>
+        </tr>
+    </thead>
+    <tbody>
+
+    @books.map {
+        case (book, publisher) => {
+            <tr>
+                @* book image *@
+            <td scope="row">
+                @book.imgKey.map { key =>
+                <img class="img-thumbnail" style="width: 100px; height: 150px;"
+                src="@{imgAddr}/@{key.split('|').head}-small.jpg">
+
+                }.getOrElse{
+                    <img class="img-thumbnail" style="width: 100px; height: 150px;"
+                    src="https://via.placeholder.com/100x150">
+                }
+                @* book name *@
+            <td>
+                <a href="@routes.MainController.edit(book.id.get)">@book.name</a>
+            </td>
+                @* book author *@
+            <td>
+            @book.author
+            </td>
+                @* book price *@
+            <td>
+                @book.price
+                @* @publisher.map(_.name).getOrElse { <em>-</em> } *@
+            </td>
+            </tr>
+        }
+    }
+
+    </tbody>
+</table>
+
+<nav aria-label="Page navigation example">
+    <ul class="pagination">
+        @currentPage.prev.map { page =>
+        <li class="page-item">
+            <a class="page-link" href="@link(page)">
+                        &larr; @Messages("books.list.pagination.prev")
+            </a>
+        </li>
+        }.getOrElse {
+            <li class="page-item disabled">
+                <a class="page-link" href="#">
+                            &larr; @Messages("books.list.pagination.prev")
+                </a>
+            </li>
+
+        }
+
+    <li class="page-item">
+        <a class="page-link" href="#">
+        @Messages("books.list.pagination", (currentPage.offset + 1), (currentPage.offset + books.size), (currentPage.total))
+        </a>
+    </li>
+        @currentPage.next.map { page =>
+        <li class="page-item">
+            <a class="page-link" href="@link(page)">
+                @Messages("books.list.pagination.next") &rarr;
+            </a>
+        </li>
+        }.getOrElse {
+            <li class="page-item disabled">
+                <a class="page-link" href="#">
+                    @Messages("books.list.pagination.next") &rarr;
+                </a>
+            </li>
+
+        }
+    </ul>
+</nav>
+
+}.getOrElse {
+
+    <div class="well">
+        <em>@Messages("books.list.pagination.nothing")</em>
+    </div>
+
+}
+
+
+
+
+

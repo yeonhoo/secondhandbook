@@ -1,0 +1,58 @@
+@(book: Book, imgAddr: String)(implicit request: Request[AnyContent])
+
+
+        <div class="container">
+            <div class="row">
+                <div class="col">
+                    <figure class="figure" style="alignment: center">
+                        @book.imgKey.map { keys =>
+                            <img src="@{imgAddr}/@{keys.split('|').head}-medium.jpg"
+                                style="width: 200px; height: 300px;"
+                                class="figure-img img-fluid rounded mainImg" alt="A generic">
+
+                        }.getOrElse {
+                            <img src="https://via.placeholder.com/200x300" class="figure-img img-fluid rounded" alt="A generic square placeholder image with rounded corners in a figure.">
+                            <figcaption class="figure-caption">A caption for the above image.</figcaption>
+                        }
+
+                    </figure>
+                    <ul class="list-inline changePicture">
+                        @book.imgKey.map { keys =>
+                            @keys.split('|').map { key =>
+                                <li class="list-inline-item">
+                                    <img class="img-thumbnail" style="width: 100px; height: 150px;"
+                                    src="@{imgAddr}/@{key}-small.jpg" >
+                                </li>
+                            }
+                        }.getOrElse("")
+
+                    </ul>
+                </div>
+                <div class="col">
+                    <h4>@book.name</h4>
+                    <p>@book.description</p>
+                    <p>R$ @book.price</p>
+                    <p>
+                        @book.reserved.map { book =>
+                            @if(book) {
+                                이미 찜 되었음
+                            } else {
+                                <button type="button" class="btn btn-primary">찜하기</button>
+                            }
+                        }
+                    </p>
+
+                </div>
+            </div>
+        </div>
+
+<script type="text/javascript" charset="utf-8">
+        $(".changePicture").on("click", "img", function(e) {
+            var src = $(this).attr("src")
+            var fileName = src.replace("-small.jpg", "-medium.jpg")
+
+            $('.mainImg').attr('src', fileName)
+
+
+        });
+</script>

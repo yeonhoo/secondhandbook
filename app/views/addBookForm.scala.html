@@ -1,0 +1,127 @@
+@(bookForm: Form[models.forms.BookFormData], publishers: Seq[(String, String)])(implicit requestHeader: MessagesRequestHeader)
+
+@import views.html.helper._
+
+@*
+@(bookForm: Form[(String, String, Long, List[String], Option[Long])], publishers: Seq[(String, String)])(implicit requestHeader: MessagesRequestHeader)
+*@
+
+@* re-usable picture field *@
+@pictureField(field: Field, className: String = "picture") = {
+    @input(field, '_label -> "Pictures", '_class -> className) { (id, name, value, _) =>
+        <input class="input-file btn" type="file" name="@name" value="@value">
+        <a class="removePicture btn btn-danger">Remove</a>
+    }
+}
+
+@pictureField(bookForm("pictures[x]"), className = "picture_template")
+
+
+    <h1>Add a book</h1>
+
+    @form(action = routes.MainController.addBook(), 'enctype -> "multipart/form-data") {
+
+        <fieldset>
+            @CSRF.formField
+            @inputText(bookForm("name"), '_label -> "Name", '_help -> "")
+            @inputText(bookForm("author"), '_label -> "Author", '_help -> "")
+            @inputText(bookForm("price"), '_label -> "Price", '_help -> "")
+            @textarea(bookForm("description"), args = 'rows -> 5, 'cols -> 50, '_label -> "Description", '_help -> "")
+
+
+
+            @*
+            @inputText(bookForm("description"), '_label -> "Description", '_help -> "")
+            *@
+
+            @* checkbox *@
+
+            @*
+            @checkbox.apply(bookForm("reserved"), '_label -> "Reserved", '_help -> "")
+            *@
+
+            @* select box *@
+            @*
+            @select(
+                bookForm("publisher"),
+                publishers,
+                '_label -> "Publisher", '_default -> "-- Choose a publisher --",
+                '_showConstraints -> false
+            )
+            *@
+            <div class="pictures">
+
+                <div class="clearfix">
+                    <div class="input">
+                        <a class="addPicture btn btn-success">Add Picture</a>
+                    </div>
+                </div>
+
+            </div>
+
+        </fieldset>
+
+        <div class="mt-4 mt-sm-4">
+
+
+            <input type="submit" value="Create this book" class="btn btn-primary"> or
+            <a class="btn btn-info"  href="@routes.MainController.list()" role="button">Cancel</a>
+        </div>
+
+    }
+
+    <script type="text/javascript" charset="utf-8">
+
+            $(".pictures").on("click", "div dd a", function(e) {
+
+                //console.debug("this => " + $(this).prop('tagName'));
+                //var button1 = $(this).parents().eq(1);
+
+                $(this).parents('.pictures').children().last().find("a").removeClass("disabled").text("Add photo")
+
+                // var button = $(this).children().last().find("a");
+                //console.debug("button3 => " + button3.prop('tagName') + " " + button3.attr("class"));
+
+                $(this).parents('.picture').remove();
+
+                // if(button.hasClass("disabled")) {
+                //     console.debug("no")
+                //     button.removeClass("disabled");
+                // };
+                renumberPics();
+            });
+
+            $(".picture_template ").on("click", "dd a", function(e) {
+                window.alert("clicked");
+                $(this).parents('.picture').remove();
+                renumberPics();
+            });
+
+
+            $('.addPicture').on('click', null, function(e) {
+
+                var pictures = $(this).parents('.pictures');
+
+                if (pictures.children().length < 6) {
+
+                    var template = $('.picture_template');
+                    pictures.children().last().before('<div class="clearfix picture">' + template.html() + '</div>');
+                    renumberPics();
+                    if (pictures.children().length == 6) {
+                        $(this).addClass("disabled").text("사진은 5장까지 올릴 수 있습니다")
+                    }
+                }
+                // else {
+                //     $(this).addClass("disabled")
+                // }
+            });
+
+
+
+
+            var renumberPics = function() {
+                $('.picture input').each(function(i) {
+                    $(this).attr('name', $(this).attr('name').replace(/pictures\[.+\]/g, 'pictures[' + i + ']'));
+                });
+            }
+    </script>

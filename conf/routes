@@ -1,0 +1,66 @@
+# Routes
+# This file defines all application routes (Higher priority routes first)
+# ~~~~
+
+
+# Default path will just redirect to the book list
+GET     /                       controllers.MainController.index
+
+# Computers list (look at the default values for pagination parameters)
+GET     /books                  controllers.MainController.list(p:Int ?= 0, s:Int ?= 2, f ?= "")
+
+# Authentication
+GET     /login                  controllers.MainController.login
+POST    /login                  controllers.MainController.authenticate
+GET     /logout                 controllers.MainController.logout
+
+# Registration
+GET     /register               controllers.MainController.registerPage
+POST    /register               controllers.MainController.registerUser
+
+# User page
+GET     /user                   controllers.MainController.userItems(p:Int ?= 0, s:Int ?= 2, f ?= "")
+
+# Add new book
+GET     /books/new              controllers.MainController.addBookPage
+POST    /books/new              controllers.MainController.addBook
+
+# Book info page
+GET     /books/details/:id      controllers.MainController.itemDetailsPage(id:Long)
+
+# Edit existing book
+GET     /books/edit/:id         controllers.MainController.edit(id:Long)
+POST    /books/edit/:id         controllers.MainController.update(id:Long)
+
+
+# Delete a book
+GET    /books/delete/:id        controllers.MainController.delete(id:Long)
+
+# Error
+GET     /unauthorized           controllers.MainController.unAuthorized
+GET     /notfound               controllers.MainController.notFound
+
+# Testing stuff
+
+GET     /userinfo               controllers.MainController.userinfoIndex
+
+GET     /email                      controllers.EmailTestController.send
+
+    #Nav page render test
+#GET     /test/nav                  controllers.HomeController.list_test(p:Int ?= 0, s:Int ?= 2, f ?= "")
+    #Avail Lang list
+GET     /lang                       controllers.MainController.availLangs
+
+#GET     /admin                      controllers.HomeController.adminIndex
+
+GET   /          controllers.ScalaFileUploadController.index()
+
+# #application-upload-routes
+POST  /          controllers.ScalaFileUploadController.upload()
+# #application-upload-routes
+
+
+# Map static resources from the /public folder to the /assets URL path
+GET     /assets/*file               controllers.Assets.at(path="/public", file)
+
+->          /webjars                webjars.Routes

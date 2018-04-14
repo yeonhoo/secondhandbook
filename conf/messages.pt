@@ -1,0 +1,17 @@
+
+books.list.title={0,choice,0#Nenhum livro|1#Um livro|1<{0,number,integer} livros} encontrado(s)
+
+books.list.pagination = Mostrando de {0} a {1}, total de {2}
+books.list.pagination.prev = Previous
+books.list.pagination.next = Next
+books.list.pagination.nothing = Não há conteúdo
+
+book.name = Nome
+book.price = Preço
+book.image = Foto
+book.publisher = Editora
+book.author = Autor(a)
+
+
+book.list.filter.placeholder = Buscar por nome...
+book.list.filter.button = Buscar por nome

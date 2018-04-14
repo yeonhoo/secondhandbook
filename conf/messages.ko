@@ -1,0 +1,16 @@
+
+books.list.title= 판매중인 {0,choice,0#한권도 못|1#한권을|1<{0,number,integer}권을} 찾았습니다
+
+books.list.pagination = 총 {2}개 중 {0} 에서 {1} 
+books.list.pagination.prev = 이전
+books.list.pagination.next = 다음
+books.list.pagination.nothing = 내용이 없습니다
+
+book.name = 제목
+book.price = 가격
+book.image = 사진
+book.publisher = 출판사
+book.author = 저자
+
+book.list.filter.placeholder = 이름으로 찾기...
+book.list.filter.button = 찾기
