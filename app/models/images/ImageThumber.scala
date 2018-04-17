@@ -3,6 +3,7 @@ package models.images
 import java.awt.AlphaComposite
 import java.awt.image.BufferedImage
 import java.io.File
+import java.nio.file.{Files, Paths}
 import javax.imageio.ImageIO
 
 import com.sksamuel.scrimage.Image
@@ -26,8 +27,18 @@ class ImageThumber(image: File, imageKey: String) {
 // maybe need to refactor here there is imageName function in Images class
   def imageName1(imageKey: String, thumbSize: ThumbSize): String = imageKey + thumbSize.suffix + ".jpg"
 
-  val file = Image.fromFile(image).scaleToHeight(thumbSize.height)
-    .output(s"/home/yun/Desktop/${imageName1(imageKey, thumbSize)}").toFile
+
+    // acho que da pra usar essa funcao pra criar o arquivo temporario no dir default
+// val newFile = File.createTempFile("temp-uploaded-", "test")
+//  newFile.path
+
+    //TODO
+    // Create volume directories explicitly so that they are created with correct owner
+    //Files.createDirectories(Paths.get("/temporary/mydir/"));
+
+    //TODO refactor
+    val file = Image.fromFile(image).scaleToHeight(thumbSize.height)
+    .output(s"/tmp/${imageName1(imageKey, thumbSize)}").toFile
 
     val name = file.getName
 

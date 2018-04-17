@@ -1,0 +1,20 @@
+version: '3'
+
+services:
+  postgresql:
+    image: postgres:latest
+    environment:
+      POSTGRES_DB: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5555:5432"
+
+  play-app:
+    image: yundoisl/book-store:0.0.1
+    ports:
+      - "8080:8080"
+    depends_on:
+      - postgresql
+    links:
+      - postgresql:postgreshost

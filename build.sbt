@@ -1,6 +1,6 @@
-name := "play-scala-anorm-example"
+name := "book-store"
 
-version := "2.6.0-SNAPSHOT"
+version := "0.1"
 
 scalaVersion := "2.12.4"
 
