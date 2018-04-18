@@ -1,4 +1,5 @@
 @(form: Form[models.forms.UserRegisterFormData])(implicit flash: Flash, request: MessagesRequestHeader)
+@import helpers.MyHelpers.myFields
 
 <div class="container">
 
@@ -9,7 +10,6 @@
             <div class="col-md-3"></div>
             <div class="col-md-6">
                 <h2>Register New User</h2>
-                <hr>
 
                 @if(form.hasGlobalErrors) {
                     <ul>
@@ -20,6 +20,7 @@
                 }
 
             </div>
+            <div class="col-md-3"></div>
         </div>
 
         @* helper input *@
@@ -45,7 +46,7 @@
             form("name"),
             '_label -> "Name",
             '_id -> "idForTheTopDlElement",
-            '_help -> "Custom help",
+            '_help -> "Provide a name with min 3 letters",
             '_showConstraints -> true,
             '_error -> "Force an error",
             '_showErrors -> true,
@@ -58,11 +59,11 @@
             form("email"),
             '_label -> "Email",
             '_id -> "idForTheTopDlElement",
-            '_help -> "Custom help",
+            '_help -> "",
             '_showConstraints -> true,
             '_error -> "Force an error",
             '_showErrors -> true,
-            'placeholder -> "your@email.com",
+            'placeholder -> "",
             'required -> "",
             'autofocus -> "",
             'class -> "form-control"
@@ -70,7 +71,7 @@
         @helper.input(form("pw"),
             '_label -> "Password",
             '_id -> "idForTheTopDlElement",
-            '_help -> "Custom help",
+            '_help -> "Provide a password with min 4 chars",
             '_showConstraints -> true,
             '_error -> "Force an error",
             '_showErrors -> true,
@@ -85,7 +86,7 @@
         @helper.input(form("rePw"),
             '_label -> "Verify password",
             '_id -> "idForTheTopDlElement",
-            '_help -> "Custom help",
+            '_help -> "",
             '_showConstraints -> true,
             '_error -> "Force an error",
             '_showErrors -> true,

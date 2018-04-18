@@ -10,15 +10,13 @@ insert into usuario (email, name, pw) values ('admin@4989.com.br', 'yunn', 'yunn
 insert into publisher (id,name) values (  1,'문학사');
 insert into publisher (id,name) values (  2,'정신과학사');
 insert into publisher (id,name) values (  3,'Companhia da letra');
+insert into publisher (id,name) values (  4,'Penguin');
 
+insert into book (id,name, price, author, description, imgKey, reserved, publisher_id, user_id) values (  3,'C completo e total', 5, 'Herbert Schildt','Old C book written in portuguese.', 'hnymokbdqogcpigfwn_c', true, NULL, 2);
+insert into book (id,name, price, author, description, imgKey, reserved, publisher_id, user_id) values (  4,'Pro ASP.NET MVC 4', 10, 'Adam Freeman','Book has some torn marks in cover page', 'nneeelw_lmykqikbccmx', true, NULL, 2);
+insert into book (id,name, price, author, description, imgKey, reserved, publisher_id, user_id) values (  5,'Visual C# 2005 How to Program (2nd Edition)', 10, 'Paul Deitel','Good state', 'bjmlflwymqjqyxkywfaw', true, NULL, 2);
 
-insert into book (id,name, price, author, description, imgKey, reserved, publisher_id, user_id) values (  1,'인간의 길', 20,  'Yun', '상태 최상입니다','dcpineenljbmiqw_hgxa|dcpineenljbmiqw_hgxa|dcpineenljbmiqw_hgxa|dcpineenljbmiqw_hgxa|dcpineenljbmiqw_hgxa', false, 1, 1);
-insert into book (id,name, price, author, description, imgKey, reserved, publisher_id, user_id) values (  2,'신과나눈이야기', 32, 'Yun','깨끗합니다','mwiekgjyn_yjmyegvbjx|mwiekgjyn_yjmyegvbjx|mwiekgjyn_yjmyegvbjx', true, 1, 1);
-insert into book (id,name, price, author, description, imgKey, reserved, publisher_id, user_id) values (  3,'Small', 5, 'Yun','좀지저분합니다', NULL, true, NULL, 2);
-insert into book (id,name, price, author, description, imgKey, reserved, publisher_id, user_id) values (  4,'Big brother', 13, 'Yun','좀지저분합니다', NULL, true, NULL, 2);
-insert into book (id,name, price, author, description, imgKey, reserved, publisher_id, user_id) values (  5,'Lala', 16, 'Yun','좀지저분합니다', NULL, true, NULL, 2);
-insert into book (id,name, price, author, description, imgKey, reserved, publisher_id, user_id) values (  6,'Teatro', 26, 'Yun','좀지저분합니다', NULL, true, NULL, 2);
-
+insert into book (id,name, price, author, description, imgKey, reserved, publisher_id, user_id) values (  6,'Demon cat recipe', 1000, 'Demon','Demon Possessed wild cat recipe. If interested contact me by kakaotalk @demonkat', 'jhohqjxbngyhbeknxgia|yppjxex_xoqdkvkwic_v', true, NULL, 2);
 
 # --- !Downs
 

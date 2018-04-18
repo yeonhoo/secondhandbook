@@ -27,8 +27,10 @@
 
 
 
+@*
 <h1 id="section-title">@Messages("books.list.title", currentPage.total) @request.messages.lang</h1>
-<h2>my books</h2>
+*@
+<h2>My books</h2>
 @request.flash.get("success").map { message =>
     <div class="alert-message warning">
         <strong>Done!</strong> @message
@@ -82,11 +84,11 @@
             </td>
                 @* book author *@
             <td>
-            @book.author
+                @book.author
             </td>
                 @* book price *@
             <td>
-                @book.price
+                <b>R$ @book.price</b>
                 @* @publisher.map(_.name).getOrElse { <em>-</em> } *@
             </td>
             </tr>

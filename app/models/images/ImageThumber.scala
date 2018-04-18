@@ -12,17 +12,6 @@ class ImageThumber(image: File, imageKey: String) {
   def generateThumbs(): List[(File, String)] = ImageThumber.sizes map generateThumb
 
   def generateThumb(thumbSize: ThumbSize): (File, String) = {
-//    val imageBuf = ImageIO.read(image)
-//    val height = imageBuf.getHeight
-//    val width = imageBuf.getWidth
-//
-
-//
-//    val imageName = imageName1(imageKey, thumbSize)
-//    val (newWidth, newHeight) = ImageThumber.newSizesFor(thumbSize, width, height)
-//    // I can call newSize method from a library
-//    // and also call a substitute writeImage method
-//    (writeImage(newWidth, newHeight, imageBuf, thumbSize, imageName), imageName)
 
 // maybe need to refactor here there is imageName function in Images class
   def imageName1(imageKey: String, thumbSize: ThumbSize): String = imageKey + thumbSize.suffix + ".jpg"
@@ -40,49 +29,12 @@ class ImageThumber(image: File, imageKey: String) {
     val file = Image.fromFile(image).scaleToHeight(thumbSize.height)
     .output(s"/tmp/${imageName1(imageKey, thumbSize)}").toFile
 
-    val name = file.getName
-
-    (file, name)
-
+    (file, file.getName)
   }
-//  private def writeImage_v2 = ???
-//
-//  private def writeImage(width: Int, height: Int, imageBuf: BufferedImage,
-//                         thumbSize: ThumbSize, imageName: String): File = {
-//
-//    val scaledImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB)
-//    val g = scaledImage.createGraphics
-//    g.setComposite(AlphaComposite.Src)
-//    g.drawImage(imageBuf, 0, 0, width, height, null);
-//    g.dispose
-//
-//    val destFile = new File(image.getParentFile, imageName)
-//    ImageIO.write(scaledImage, "png", destFile)
-//    destFile
-//  }
 }
 
 object ImageThumber {
   val sizes = List(SmallThumb, MediumThumb, LargeThumb, VeryLargeThumb)
-
-  def newSizesFor_v2 = ???
-
-  def newSizesFor(thumbSize: ThumbSize, originalWidth: Int, originalHeight: Int): (Int, Int) = {
-    var newWidth: Double = originalWidth
-    var newHeight: Double = originalHeight
-
-    if (newWidth > thumbSize.width) {
-      newWidth = thumbSize.width
-      newHeight = originalHeight * newWidth / originalWidth
-    }
-    if (newHeight > thumbSize.height) {
-      val oldHeight = newHeight
-      newHeight = thumbSize.height
-      newWidth = newHeight * newWidth / oldHeight
-    }
-
-    (newWidth.toInt, newHeight.toInt)
-  }
 }
 
 sealed case class ThumbSize(width: Int, height: Int, suffix: String)

@@ -26,8 +26,9 @@
 }
 
 
-
+    @*
     <h1 id="section-title">@Messages("books.list.title", currentPage.total) @request.messages.lang</h1>
+    *@
 
     @request.flash.get("success").map { message =>
         <div class="alert-message warning">
@@ -35,7 +36,7 @@
         </div>
     }
 
-    <div class="mtb-sm-4 mb-4 mt-4">
+    <div class="mb-4 mt-4">
 
         @form(action=routes.MainController.list()) {
             <input type="search" id="searchbox" name="f" value="@currentFilter" placeholder="@Messages("book.list.filter.placeholder")">

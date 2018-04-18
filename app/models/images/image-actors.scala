@@ -3,13 +3,16 @@ package models.images
 import akka.actor._
 import akka.routing._
 import java.io.File
+
 import models.aws.S3Sender
 import play.api.Play.current
 import play.api.libs.concurrent.Akka
+
 import scala.util.Random
 import javax.inject._
 
 import akka.actor.ActorSystem
+import play.api.Configuration
 import play.api.mvc._
 
 import scala.concurrent.duration._
@@ -19,7 +22,7 @@ import scala.concurrent.{ExecutionContext, Future, Promise}
 // really it does need to be Singleton? I think it does because it takes actorSystem as argument
 // it there are more than one Images object, ther would be more than one actorSystem? i'm not sure
 @Singleton
-class Images @Inject()(actorSystem: ActorSystem) {
+class Images @Inject()(actorSystem: ActorSystem, config: Configuration) {
   val thumberRouter =
     actorSystem.actorOf(Props[ImageThumberActor].withRouter(SmallestMailboxPool(2)), "thumber-router")
   val s3SenderRouter =
@@ -40,7 +43,7 @@ class Images @Inject()(actorSystem: ActorSystem) {
   def generateUrl(imageKey: String, thumbSize: ThumbSize): String = {
 
     "https://s3-sa-east-1.amazonaws.com/%s/%s".format(
-      current.configuration.getString("aws.s3.bucket").get,
+      config.get[String]("aws.s3.bucket"),
       imageName(imageKey, thumbSize)
     )
   }
@@ -70,7 +73,7 @@ class S3SenderActor extends Actor with ActorLogging {
   def receive = {
     case SendToS3(image, imageKey) =>
       log.info("about to send {} to s3", imageKey)
-      new S3Sender(image, imageKey).send
+      new S3Sender(image, imageKey).send()
   }
 }
 
