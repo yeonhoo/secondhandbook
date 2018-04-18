@@ -4,29 +4,30 @@ import akka.actor._
 import akka.routing._
 import java.io.File
 
-import models.aws.S3Sender
-import play.api.Play.current
-import play.api.libs.concurrent.Akka
+import models.aws.{S3Sender, Sender}
 
 import scala.util.Random
 import javax.inject._
 
 import akka.actor.ActorSystem
 import play.api.Configuration
-import play.api.mvc._
-
-import scala.concurrent.duration._
-import scala.concurrent.{ExecutionContext, Future, Promise}
 
 
 // really it does need to be Singleton? I think it does because it takes actorSystem as argument
 // it there are more than one Images object, ther would be more than one actorSystem? i'm not sure
 @Singleton
 class Images @Inject()(actorSystem: ActorSystem, config: Configuration) {
+
   val thumberRouter =
     actorSystem.actorOf(Props[ImageThumberActor].withRouter(SmallestMailboxPool(2)), "thumber-router")
-  val s3SenderRouter =
-    actorSystem.actorOf(Props[S3SenderActor].withRouter(SmallestMailboxPool(4)), "s3-sender-router")
+
+  val s3Sender = new S3Sender(
+    config.get[String]("aws.accessKey"),
+    config.get[String]("aws.secretKey"),
+    config.get[String]("aws.s3.bucket"))
+
+  val s3SenderRouter = actorSystem.actorOf(Props(new S3SenderActor(s3Sender))
+      .withRouter(SmallestMailboxPool(4)), "s3-sender-router")
 
   /**
    * Generates a key for the image and returns it immediatelly, while sending the
@@ -41,14 +42,12 @@ class Images @Inject()(actorSystem: ActorSystem, config: Configuration) {
   }
 
   def generateUrl(imageKey: String, thumbSize: ThumbSize): String = {
-
-    "https://s3-sa-east-1.amazonaws.com/%s/%s".format(
+    "%s/%s/%s".format(
+      config.get[String]("aws.s3.server"),
       config.get[String]("aws.s3.bucket"),
       imageName(imageKey, thumbSize)
     )
   }
-
-
 
   def imageName(imageKey: String, thumbSize: ThumbSize): String = imageKey + thumbSize.suffix + ".jpg"
 }
@@ -69,11 +68,12 @@ class ImageThumberActor extends Actor with ActorLogging {
   }
 }
 
-class S3SenderActor extends Actor with ActorLogging {
+// constructor arg type is Sender, for the sake of unit testing it wouldn't be the exact maching type (S3Sender2)
+class S3SenderActor(s3Sender: Sender) extends Actor with ActorLogging {
   def receive = {
     case SendToS3(image, imageKey) =>
       log.info("about to send {} to s3", imageKey)
-      new S3Sender(image, imageKey).send()
+      s3Sender.send(image, imageKey)
   }
 }
 
