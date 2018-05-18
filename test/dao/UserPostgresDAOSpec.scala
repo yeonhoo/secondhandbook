@@ -1,51 +1,75 @@
 package dao
 
-import commons.{PostgresDataHandlerSpec, RandomDataGenerator}
+import akka.actor.ActorSystem
+import commons.{PostgresDataHandlerSpec, PostgresDevMode, RandomDataGenerator}
 import models.dao.{DatabaseExecutionContext, UserDAO}
-import models.User
+import models.domain.User
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatestplus.play._
-import org.scalatestplus.play.guice.GuiceOneAppPerSuite
-import play.api.Logger
 
 
-class UserPostgresDAOSpec extends PlaySpec with GuiceOneAppPerSuite with ScalaFutures with PostgresDataHandlerSpec  {
+class UserPostgresDAOSpec extends PlaySpec with ScalaFutures with PostgresDataHandlerSpec with PostgresDevMode  {
 
-  implicit val ec: DatabaseExecutionContext = app.injector.instanceOf(classOf[DatabaseExecutionContext])
 
+  // pricesa inicializar primeiro com "dev.conf" para inicializar o db "devmode"
+  // eu nao deveria nem precisar criar "devmode" na localhost
+  // pq o teste eh para conectar no db da docker e nao na localhost
+
+
+  implicit val sys = ActorSystem("test")
+  //val ec: ExecutionContext = sys.dispatchers.lookup("database.dispatcher")
+  val ec = new DatabaseExecutionContext(sys)
+
+
+//  val application = new GuiceApplicationBuilder()
+//    .loadConfig(Configuration(ConfigFactory.load("dev.conf"))).build()
+//
+//  implicit val ec: DatabaseExecutionContext = application.injector.instanceOf(classOf[DatabaseExecutionContext])
 
   lazy val userDAO = new UserDAO(database)(ec)
 
+  // user object
+  val name = "Yun"
+  val email = RandomDataGenerator.email.string
+  val pw = RandomDataGenerator.hiddenPassword.string
+  val status = 1 // VERIFIED
+
+  val user = User(None, name, email, pw, status)
+
+
   "User service" should {
 
-    "create a new user" in {
+    "authenticate a User with the email and pw" in {
 
-      val name = "Yun"
-      val email = RandomDataGenerator.email.string
-      val pw = RandomDataGenerator.hiddenPassword.string
+    }
+    "change the password" in {
+      val email = "admin@4989.com"
+      val newPassword = "1234"
+      val result = userDAO.changePassword(email, newPassword)
 
-      val user = User(None, name, email, pw)
-      val result = userDAO.insert(user)
-
-      whenReady(result) { maybeUser =>
-
-        maybeUser.map { user =>
-          user.name mustBe name
-          user.email mustBe email
-          //user.pw mustBe empty
-        }
-
+      whenReady(result) { updatedRowCount =>
+        updatedRowCount mustBe 1
       }
     }
 
-    "create a new user with already existing email" in {
+    "create a new user" in {
 
-      val name = "Yun"
-      val email = "admin@admin.com"
-      val pw = RandomDataGenerator.hiddenPassword.string
+      val result = userDAO.insert(user)
 
-      val user = User(None, name, email, pw)
+      whenReady(result) { maybeUser =>
 
+        maybeUser.map { user =>
+          user.name mustBe name
+          user.email mustBe email
+          user.status mustBe 1
+          user.pw mustBe ""
+        }
+      }
+    }
+
+    "fail to create a new user with already existing email" in {
+
+      //insert an User to DB
       val result = userDAO.insert(user)
 
       whenReady(result) { maybeUser =>
@@ -55,12 +79,12 @@ class UserPostgresDAOSpec extends PlaySpec with GuiceOneAppPerSuite with ScalaFu
         }
       }
 
-      // lowercase email
+      // create an user with lowercase email
       val existingEmailUser = user.copy(email= email.toLowerCase)
-      // try to create a user with the same email to lowercase
-      val result2 = userDAO.insert(existingEmailUser)
+      // try to insert a User with the lowercased email
+      val noneResult = userDAO.insert(existingEmailUser)
 
-      whenReady(result2) { maybeUser =>
+      whenReady(noneResult) { maybeUser =>
         maybeUser mustBe None
       }
 
@@ -68,46 +92,18 @@ class UserPostgresDAOSpec extends PlaySpec with GuiceOneAppPerSuite with ScalaFu
 
     "find a user by id" in {
 
-      val result = userDAO.insert(
-          User(None, "Yun", "admin@admin.com", RandomDataGenerator.hiddenPassword.string))
+      // could be done either by using for-comprehensions or flatmap
+      // option 1
+      val futureResult = for {
+        insertUser <-userDAO.insert(user)
+        findEmail <- userDAO.findByEmail(email)
+      } yield findEmail
 
-      whenReady(userDAO.findByEmail("admin@admin.com")) { maybeUser =>
-        Logger.info("working")
-        Logger.info("email => " + maybeUser.get.email)
+      // option 2
+      //val result = userDAO.insert(user) flatMap { _ => userDAO.findByEmail(email)}
+      whenReady(futureResult) { maybeUser =>
         maybeUser.isDefined mustBe true
       }
     }
-
-    //    "create a new user" in {
-    //      val email = RandomDataGenerator.email
-    //      val password = RandomDataGenerator.hiddenPassword
-    //      val result = userService.create(email, password)
-    //
-    //      whenReady(result) { maybeUser =>
-    //        Logger.info("working")
-    //        maybeUser.map( user =>
-    //          user.email.string mustBe email.string)
-    //      }
-    //    }
-    //
-    //    "Fail to create a new user when the email already exists" in {
-    //      val email = RandomDataGenerator.email
-    //      val password = RandomDataGenerator.hiddenPassword
-    //
-    //      val result = userService.create(email, password)
-    //      whenReady(result) { maybeUser =>
-    //        Logger.info("working")
-    //        maybeUser.map( user =>
-    //          user.email.string mustBe email.string)
-    //      }
-    //
-    //      val result2 = userService.create(email.copy(string = email.string.toUpperCase), password)
-    //
-    //      whenReady(result2) { maybeUser =>
-    //        Logger.info("working")
-    //        maybeUser mustBe None
-    //      }
-    //
-    //    }
   }
 }

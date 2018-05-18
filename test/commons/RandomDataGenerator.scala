@@ -1,6 +1,6 @@
 package commons
 
-import models.{UserEmail, UserHiddenPassword, UserPassword}
+import models.domain.{UserEmail, UserHiddenPassword, UserPassword}
 
 import scala.util.Random
 

@@ -28,6 +28,10 @@ POST    /books/new              controllers.MainController.addBook
 # Book info page
 GET     /books/details/:id      controllers.MainController.itemDetailsPage(id:Long)
 
+# Insert new comment to book
+POST    /books/details/comment      controllers.MainController.addComment(id:Long)
+
+
 # Edit existing book
 GET     /books/edit/:id         controllers.MainController.edit(id:Long)
 POST    /books/edit/:id         controllers.MainController.update(id:Long)
@@ -40,24 +44,9 @@ GET    /books/delete/:id        controllers.MainController.delete(id:Long)
 GET     /unauthorized           controllers.MainController.unAuthorized
 GET     /notfound               controllers.MainController.notFound
 
+
 # Testing stuff
-
-GET     /userinfo               controllers.MainController.userinfoIndex
-
-GET     /email                      controllers.EmailTestController.send
-
-    #Nav page render test
-#GET     /test/nav                  controllers.HomeController.list_test(p:Int ?= 0, s:Int ?= 2, f ?= "")
-    #Avail Lang list
-GET     /lang                       controllers.MainController.availLangs
-
-#GET     /admin                      controllers.HomeController.adminIndex
-
-GET   /          controllers.ScalaFileUploadController.index()
-
-# #application-upload-routes
-POST  /          controllers.ScalaFileUploadController.upload()
-# #application-upload-routes
+GET   /                         controllers.ScalaFileUploadController.index()
 
 
 # Map static resources from the /public folder to the /assets URL path

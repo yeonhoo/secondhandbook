@@ -1,5 +1,5 @@
+@import models.domain._
 @(id: Long, bookForm: Form[Book], publishers: Seq[(String, String)])(implicit requestHeader: MessagesRequestHeader)
-
 
 @import views.html.helper._
 
@@ -17,7 +17,7 @@
         
         <fieldset>
             @CSRF.formField
-            @inputText(bookForm("name"), '_label -> "Name", '_help -> "")
+            @inputText(bookForm("title"), '_label -> "Name", '_help -> "")
             @inputText(bookForm("author"), '_label -> "Author", '_help -> "")
             @inputText(bookForm("price"), '_label -> "Price", '_help -> "")
             @textarea(bookForm("description"), args = 'rows -> 5, 'cols -> 50, '_label -> "Description", '_help -> "")

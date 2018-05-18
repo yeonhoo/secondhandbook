@@ -6,7 +6,7 @@
   import java.io.File
   import java.nio.file.{Path, Paths, Files => JFiles}
 
-  import controllers.routes
+  import controllers.{ScalaFileUploadController, routes}
   import play.api.mvc.MultipartFormData.FilePart
   import play.api.mvc._
 
@@ -101,7 +101,7 @@
         val controllerComponents = app.injector.instanceOf[ControllerComponents]
 
         // dessa vez o parser eh o do tipo TemporaryFile
-        testAction(new controllers.ScalaFileUploadController(controllerComponents).upload, request)
+        testAction(new ScalaFileUploadController(controllerComponents).upload, request)
 
         uploaded.delete()
         success

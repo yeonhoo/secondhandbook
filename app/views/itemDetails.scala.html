@@ -1,11 +1,11 @@
-@(book: Book, imgAddr: String)(implicit request: Request[AnyContent])
-
+@import models.domain._
+@(book: Book, comments: List[Comment], commentForm: Form[String], imgAddr: String)(implicit request: RequestHeader, messagesProvider: MessagesProvider)
 
         <div class="container">
             <div class="row">
                 <div class="col">
                     <figure class="figure" style="alignment: center">
-                        @book.imgKey.map { keys =>
+                        @book.imgKeys.map { keys =>
                             <img src="@{imgAddr}/@{keys.split('|').head}-medium.jpg"
                                 style="width: 200px; height: 300px;"
                                 class="figure-img img-fluid rounded mainImg" alt="A generic">
@@ -17,7 +17,7 @@
 
                     </figure>
                     <ul class="list-inline changePicture">
-                        @book.imgKey.map { keys =>
+                        @book.imgKeys.map { keys =>
                             @keys.split('|').map { key =>
                                 <li class="list-inline-item">
                                     <img class="img-thumbnail" style="width: 100px; height: 150px;"
@@ -29,7 +29,7 @@
                     </ul>
                 </div>
                 <div class="col">
-                    <h4>@book.name</h4>
+                    <h4>@book.title</h4>
                     <p>Author : @book.author</p>
                     <p>Description : @book.description</p>
                     <p><b>R$ @book.price </b></p>
@@ -44,6 +44,22 @@
                         }
                         *@
                     </p>
+                    <ul>
+                    @for(comment <- comments) {
+                        <li>
+                            <p>User: @comment.userId / Posted: @comment.created </p>
+                            <p>@comment.content</p>
+                        </li>
+                    }
+                    </ul>
+                    @import helper._
+                    @request.session.get("id").map { id =>
+                        @form(routes.MainController.addComment(book.id.get)) {
+                            @CSRF.formField
+                            @inputText(commentForm("content"), '_label -> "Content: ")
+                            <input class="btn primary" type="submit" value="Submit">
+                        }
+                    }
 
                 </div>
             </div>

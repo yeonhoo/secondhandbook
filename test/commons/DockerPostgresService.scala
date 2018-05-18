@@ -56,7 +56,7 @@ object DockerPostgresService {
                 // NOTE: For some reason the result is always false
                 conn.createStatement().execute(s"CREATE DATABASE $DatabaseName")
                 Logger.info(url)
-                Logger.info("creating database")
+                Logger.info(s"creating database : $DatabaseName")
                 conn.close()
               }
 

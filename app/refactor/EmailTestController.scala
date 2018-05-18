@@ -1,12 +1,10 @@
-package controllers
+package refactor
 
-import java.io.File
 import javax.inject.Inject
 
-import org.apache.commons.mail.EmailAttachment
 import play.api.Environment
 import play.api.libs.mailer._
-import play.api.mvc.{AbstractController, Action, Controller, ControllerComponents}
+import play.api.mvc.{AbstractController, ControllerComponents}
 
 class EmailTestController @Inject()(mailer: MailerClient,
                                     environment: Environment,

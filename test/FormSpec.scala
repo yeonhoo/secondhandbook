@@ -1,10 +1,9 @@
 
 import models.forms.AppForms._
-import models.forms.BookFormData
+import models.forms.{BookFormData, DevBookFormData}
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatestplus.play._
 import org.scalatestplus.play.guice._
-
 
 
 
@@ -15,17 +14,16 @@ class FormSpec extends PlaySpec with GuiceOneAppPerSuite with ScalaFutures {
   "addBookForm" should {
     "throw an error with more than limit number of imgs " in {
 
-      val data = BookFormData(
-        name = "James Joyce",
-        price= 10,
-        author= Some("Ulysses"),
-        description= Some("Brand new"),
-        imgKey= List("picture[0]", "picture[1]", "picture[2]", "picture[3]", "picture[4]", "picture[5]"),
-        reserved= Some(true),
-        publisherId= None
+      val data = DevBookFormData(
+        title = "James Joyce",
+        author = "Ulysses",
+        description = "Brand new",
+        price = 10,
+        imgKeys = List("picture[0]", "picture[1]", "picture[2]", "picture[3]", "picture[4]", "picture[5]"),
+        publisherId = None
       )
 
-      val filledForm = addBookForm.fillAndValidate(data)
+      val filledForm = devAddBookForm.fillAndValidate(data)
 
       logger.info(filledForm.errors.mkString(" : "))
 
@@ -34,8 +32,6 @@ class FormSpec extends PlaySpec with GuiceOneAppPerSuite with ScalaFutures {
 
 
   }
-
-
 
   //      Logger.info(registerFormFilled.errors.mkString(", "))
   //      Logger.info(registerFormFilled.data.toString)

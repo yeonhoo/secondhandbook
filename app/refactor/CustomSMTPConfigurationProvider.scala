@@ -1,10 +1,10 @@
-package controllers
+package refactor
 
 import javax.inject.Provider
 
+import play.api.inject.Module
 import play.api.libs.mailer.SMTPConfiguration
 import play.api.{Configuration, Environment}
-import play.api.inject.Module
 
 class CustomSMTPConfigurationProvider extends Provider[SMTPConfiguration] {
   override def get() = new SMTPConfiguration("typesafe.org", 1234)

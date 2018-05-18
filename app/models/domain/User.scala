@@ -1,12 +1,12 @@
-package models
+package models.domain
 
 import org.mindrot.jbcrypt.BCrypt
 
-case class User(id: Option[Long] = None, // id can be None?
+case class User(id: Option[Long] = None,
                 name: String,
                 email: String,
-                pw: String)
-
+                pw: String,
+                status: Int)
 
 case class UserPassword(string: String) extends AnyVal
 
@@ -28,20 +28,4 @@ object UserHiddenPassword {
 }
 
 case class UserEmail(string: String)
-
-
-
-//TODO: define new User model
-
-//case class Userx(id: UserId, email: UserEmail)
-//
-//
-//case class UserId(string: String) extends AnyVal
-//
-//object UserId {
-//
-//  def create: UserId = UserId(RandomIdGenerator.stringId)
-//
-//}
-//
 

@@ -23,24 +23,10 @@ import play.api.db.{Database, Databases}
   *   }
   * }}}
   */
-trait PostgresDataHandlerSpec
-  extends WordSpec
-    with MustMatchers
-    with DockerTestKit
-    with DockerPostgresService
-    with BeforeAndAfterAll {
+
+trait PostgresProdMode {
 
   import DockerPostgresService._
-
-  implicit val pc = PatienceConfig(Span(20, Seconds), Span(1, Second))
-
-  override implicit val dockerFactory: DockerFactory = new SpotifyDockerFactory(
-    DefaultDockerClient.fromEnv().build())
-
-  override def beforeAll(): Unit = {
-    super.beforeAll()
-    val _ = isContainerReady(postgresContainer).futureValue mustEqual true
-  }
 
   def database: Database = {
     val database = Databases(
@@ -59,4 +45,49 @@ trait PostgresDataHandlerSpec
 
     database
   }
+}
+
+
+trait PostgresDevMode {
+
+ import DockerPostgresService._
+
+  def database: Database = {
+    val database = Databases(
+      driver = "org.postgresql.Driver",
+      url = s"jdbc:postgresql://localhost:$PostgresExposedPort/$DatabaseName",
+      name = "dev",
+      config = Map(
+        "username" -> PostgresUsername,
+        "password" -> PostgresPassword
+      )
+    )
+
+    println("Database retrieved, applying evolutions")
+
+    Evolutions.applyEvolutions(database)
+
+    database
+  }
+}
+
+trait PostgresDataHandlerSpec
+  extends WordSpec
+    with MustMatchers
+    with DockerTestKit
+    with DockerPostgresService
+    with BeforeAndAfterAll {
+
+
+  implicit val pc = PatienceConfig(Span(20, Seconds), Span(1, Second))
+
+  override implicit val dockerFactory: DockerFactory = new SpotifyDockerFactory(
+    DefaultDockerClient.fromEnv().build())
+
+  override def beforeAll(): Unit = {
+    super.beforeAll()
+    val _ = isContainerReady(postgresContainer).futureValue mustEqual true
+  }
+
+
 }

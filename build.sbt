@@ -12,6 +12,7 @@ resolvers += "Akka Snapshot Repository" at "http://repo.akka.io/snapshots/"
 
 libraryDependencies ++= Seq(
   jdbc ,
+  jdbc % Test,
   evolutions ,
   guice ,
   ehcache ,
@@ -36,3 +37,5 @@ libraryDependencies ++= Seq(
   "de.svenkubiak" % "jBCrypt" % "0.4.1"
 
  )
+
+//javaOptions in Test += "-Dconfig.file=conf/dev.conf"

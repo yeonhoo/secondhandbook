@@ -1,94 +1,231 @@
-# --- First database schema
-
 # --- !Ups
 
--- set ignorecase true;
+
+-- Created by Vertabelo (http://vertabelo.com)
+-- Last modification date: 2018-04-20 15:51:24.788
 
 -- enable psql extensions
-CREATE EXTENSION IF NOT EXISTS CITEXT;
+CREATE EXTENSION IF NOT EXISTS CITEXT;;
 
-CREATE TABLE userx (
-  user_id VARCHAR(40) NOT NULL,
-  email CITEXT NOT NULL,
-  password VARCHAR(64) NOT NULL,
-  created_on TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  verified_on TIMESTAMP WITH TIME ZONE NULL,
-  -- constraints
-  CONSTRAINT users_user_id_pk PRIMARY KEY (user_id),
-  CONSTRAINT users_email_is_unique UNIQUE (email),
-  CONSTRAINT users_email_is_not_empty CHECK (email <> ''),
-  CONSTRAINT users_password_is_not_empty CHECK (password <> ''),
-  CONSTRAINT verified_on_is_after_created_on CHECK (verified_on > created_on)
-);
-CREATE INDEX users_email_index ON userx USING BTREE (email);
-CREATE INDEX users_created_on_index ON userx USING BTREE (created_on);
-
-
-create sequence user_id_seq;
-
-create table usuario (
-  id                        bigint not null DEFAULT nextval('user_id_seq'),
-  email                     CITEXT not null,
-  name                      varchar(255) not null,
-  pw                        varchar(255) not null,
-  created_on TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  verified_on TIMESTAMP WITH TIME ZONE NULL,
-
-  CONSTRAINT pk_user primary key (id),
-  CONSTRAINT usuario_email_is_unique UNIQUE (email),
-  CONSTRAINT usuario_email_is_not_empty CHECK (email <> ''),
-  CONSTRAINT usuario_password_is_not_empty CHECK (pw <> ''),
-  CONSTRAINT verified_on_is_after_created_on CHECK (verified_on > created_on)
-);
-
-create table publisher (
-  id                        bigint not null,
-  name                      varchar(255) not null,
-  constraint pk_publisher primary key (id))
+-- sequences
+-- Sequence: book_seq
+CREATE SEQUENCE book_seq
+  NO MINVALUE
+  NO MAXVALUE
+  START WITH 1000
+  NO CYCLE
 ;
 
-create table book (
-  id                        bigint not null,
-  name                      varchar(255) not null,
-  price                     bigint not null,
-  author                    varchar(255),
-  description               varchar(1024),
-  imgKey                    varchar(1024),
-  reserved                  BOOLEAN,
-  publisher_id              bigint,
-  user_id                   bigint,
-  constraint pk_book primary key (id))
+-- Sequence: publisher_seq
+CREATE SEQUENCE publisher_seq
+  NO MINVALUE
+  NO MAXVALUE
+  START WITH 1000
+  NO CYCLE
 ;
 
+-- Sequence: user_seq
+CREATE SEQUENCE user_seq
+  NO MINVALUE
+  NO MAXVALUE
+  NO CYCLE
+;
 
+-- Sequence: comment_seq
+CREATE SEQUENCE comment_seq
+  NO MINVALUE
+  NO MAXVALUE
+  NO CYCLE
+;
 
-create sequence publisher_seq start with 1000;
+-- tables
+-- Table: book
+CREATE TABLE book (
+  id bigint  NOT NULL,
+  title varchar(200)  NOT NULL,
+  author varchar(200)  NOT NULL,
+  description varchar(1000)  NOT NULL,
+  price bigint  NOT NULL,
+  imgs varchar(200)  NOT NULL,
+  status bigint  NOT NULL, -- change to INT
+  up_count int  NOT NULL,
+  down_count int  NOT NULL,
+  user_account_id bigint  NOT NULL,
+  publisher_id bigint  NOT NULL, -- can be NULL
+  created timestamp  NOT NULL DEFAULT CURRENT_TIMESTAMP, -- add DEFAULT
+  CONSTRAINT pk_book PRIMARY KEY (id)
+);
 
-create sequence book_seq start with 1000;
+CREATE INDEX ix_book_publisher on book (publisher_id ASC);
 
-alter table book add constraint fk_book_publisher_1 foreign key (publisher_id) references publisher (id) on delete restrict on update restrict;
-alter table book add constraint fk_book_user_1 foreign key (user_id) references usuario (id)  on delete restrict  on update restrict;
-create index ix_book_publisher_1 on book (publisher_id);
+-- Table: comment
+CREATE TABLE comment (
+  id bigint  NOT NULL DEFAULT nextval('comment_seq'), -- add DEFAULT
+  content varchar(1000)  NOT NULL,
+  user_account_id bigint  NOT NULL,
+  status bigint  NOT NULL, -- change to INT
+  book_id bigint  NOT NULL,
+  created timestamp  NOT NULL DEFAULT CURRENT_TIMESTAMP, -- add DEFAULT
+  CONSTRAINT pk_comment PRIMARY KEY (id)
+);
+
+-- Table: publisher
+CREATE TABLE publisher (
+  id bigint  NOT NULL,
+  name varchar(200)  NOT NULL,
+  description varchar(200)  NOT NULL,
+  CONSTRAINT pk_publisher PRIMARY KEY (id)
+);
+
+-- Table: status
+CREATE TABLE status (
+  id bigint  NOT NULL,
+  name varchar(100)  NOT NULL,
+  CONSTRAINT pk_status PRIMARY KEY (id)
+);
+
+-- Table: user_account
+CREATE TABLE user_account (
+  id bigint  NOT NULL DEFAULT nextval('user_seq'),
+  email citext  NOT NULL,
+  name varchar(200)  NOT NULL,
+  pw varchar(100)  NOT NULL,
+  created timestamp  NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  verified timestamp  NULL,
+  status bigint  NOT NULL,
+  CONSTRAINT user_email_is_unique UNIQUE (email) NOT DEFERRABLE  INITIALLY IMMEDIATE,
+  CONSTRAINT user_email_is_not_empty CHECK (email <> '') NOT DEFERRABLE INITIALLY IMMEDIATE,
+  CONSTRAINT user_password_is_not_empty CHECK (pw <> '' ) NOT DEFERRABLE INITIALLY IMMEDIATE,
+  CONSTRAINT verified_is_after_created CHECK (verified > created) NOT DEFERRABLE INITIALLY IMMEDIATE,
+  CONSTRAINT pk_user PRIMARY KEY (id)
+);
+
+-- Table: user_status
+CREATE TABLE user_status (
+  id bigint  NOT NULL,
+  name varchar(100)  NOT NULL,
+  CONSTRAINT pk_user_status PRIMARY KEY (id)
+);
+
+-- foreign keys
+-- Reference: fk_book_publisher (table: book)
+ALTER TABLE book ADD CONSTRAINT fk_book_publisher
+FOREIGN KEY (publisher_id)
+REFERENCES publisher (id)
+ON DELETE  RESTRICT
+ON UPDATE  RESTRICT
+  NOT DEFERRABLE
+  INITIALLY IMMEDIATE
+;
+
+-- Reference: fk_book_status (table: book)
+ALTER TABLE book ADD CONSTRAINT fk_book_status
+FOREIGN KEY (status)
+REFERENCES status (id)
+ON DELETE  RESTRICT
+ON UPDATE  RESTRICT
+  NOT DEFERRABLE
+  INITIALLY IMMEDIATE
+;
+
+-- Reference: fk_book_user_account (table: book)
+ALTER TABLE book ADD CONSTRAINT fk_book_user_account
+FOREIGN KEY (user_account_id)
+REFERENCES user_account (id)
+ON DELETE  RESTRICT
+ON UPDATE  RESTRICT
+  NOT DEFERRABLE
+  INITIALLY IMMEDIATE
+;
+
+-- Reference: fk_comment_book (table: comment)
+ALTER TABLE comment ADD CONSTRAINT fk_comment_book
+FOREIGN KEY (book_id)
+REFERENCES book (id)
+ON UPDATE  CASCADE
+  NOT DEFERRABLE
+  INITIALLY IMMEDIATE
+;
+
+-- Reference: fk_comment_status (table: comment)
+ALTER TABLE comment ADD CONSTRAINT fk_comment_status
+FOREIGN KEY (status)
+REFERENCES status (id)
+ON DELETE  RESTRICT
+ON UPDATE  RESTRICT
+  NOT DEFERRABLE
+  INITIALLY IMMEDIATE
+;
+
+-- Reference: fk_comment_user (table: comment)
+ALTER TABLE comment ADD CONSTRAINT fk_comment_user
+FOREIGN KEY (user_account_id)
+REFERENCES user_account (id)
+  NOT DEFERRABLE
+  INITIALLY IMMEDIATE
+;
+
+-- Reference: fk_user_account_status (table: user_account)
+ALTER TABLE user_account ADD CONSTRAINT fk_user_account_status
+FOREIGN KEY (status)
+REFERENCES user_status (id)
+ON DELETE  RESTRICT
+ON UPDATE  RESTRICT
+  NOT DEFERRABLE
+  INITIALLY IMMEDIATE
+;
+
 
 
 # --- !Downs
 
-SET REFERENTIAL_INTEGRITY FALSE;
+-- Created by Vertabelo (http://vertabelo.com)
+-- Last modification date: 2018-04-20 15:51:24.788
 
-drop table if exists usuario;
+-- foreign keys
+ALTER TABLE book
+  DROP CONSTRAINT fk_book_publisher;
 
-drop table if exists publisher;
+ALTER TABLE book
+  DROP CONSTRAINT fk_book_status;
 
-drop table if exists book;
+ALTER TABLE book
+  DROP CONSTRAINT fk_book_user_account;
 
-SET REFERENTIAL_INTEGRITY TRUE;
+ALTER TABLE comment
+  DROP CONSTRAINT fk_comment_book;
 
-drop sequence if exists publisher_seq;
+ALTER TABLE comment
+  DROP CONSTRAINT fk_comment_status;
 
-drop sequence if exists book_seq;
+ALTER TABLE comment
+  DROP CONSTRAINT fk_comment_user;
 
-drop sequence if exists user_id_seq;
+ALTER TABLE user_account
+  DROP CONSTRAINT fk_user_account_status;
 
---- new added
-drop table if EXISTS userx;
+-- tables
+DROP TABLE book;
+
+DROP TABLE comment;
+
+DROP TABLE publisher;
+
+DROP TABLE status;
+
+DROP TABLE user_account;
+
+DROP TABLE user_status;
+
+-- sequences
+DROP SEQUENCE IF EXISTS book_seq;
+
+DROP SEQUENCE IF EXISTS publisher_seq;
+
+DROP SEQUENCE IF EXISTS user_seq;
+
+DROP SEQUENCE IF EXISTS comment_seq;
+
+
+-- End of file.
 

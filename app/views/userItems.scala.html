@@ -1,3 +1,4 @@
+@import models.domain._
 @(currentPage: Page[(Book, Option[Publisher])], currentOrderBy: Int, currentFilter: String)(imgAddr: String)(implicit user: Option[String] = None, request: MessagesRequestHeader)
 
 @import helper._
@@ -70,7 +71,7 @@
             <tr>
                 @* book image *@
             <td scope="row">
-                @book.imgKey.map { key =>
+                @book.imgKeys.map { key =>
                 <img class="img-thumbnail" style="width: 100px; height: 150px;"
                 src="@{imgAddr}/@{key.split('|').head}-small.jpg">
 
@@ -80,7 +81,7 @@
                 }
                 @* book name *@
             <td>
-                <a href="@routes.MainController.edit(book.id.get)">@book.name</a>
+                <a href="@routes.MainController.edit(book.id.get)">@book.title</a>
             </td>
                 @* book author *@
             <td>

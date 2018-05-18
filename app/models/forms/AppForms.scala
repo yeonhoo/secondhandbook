@@ -1,47 +1,50 @@
 package models.forms
 
-import models.Book
+import models.domain.Book
 import play.api.data.{Form, Forms}
 import play.api.data.Forms._
 
 
 case class UserRegisterFormData(name: String, email: String, pw: String, rePw: String)
 
+
+case class DevBookFormData(title: String, author: String, description: String, price: Long,
+                           imgKeys: List[String],
+                           publisherId: Option[Long])
+
 case class BookFormData(name: String, price: Long, author: Option[String],
                         description:Option[String], imgKey: List[String],
                         reserved: Option[Boolean], publisherId: Option[Long])
 
 object AppForms {
-
-  // i think this form is used mainly when a Book object is retrieved from DB
-  val bookForm = Form(
+  val devBookForm = Form(
     mapping(
       "id" -> ignored(None: Option[Long]),
-      "name" -> nonEmptyText,
+      "title" -> nonEmptyText,
+      "author" -> nonEmptyText,
+      "description" -> text,
       "price" -> longNumber,
-      "author" -> optional(text),
-      "description" -> optional(text),
-      "imgKey" -> optional(text),
-      "reserved" -> optional(boolean),
-      "publisher" -> optional(longNumber),
-      "user" -> optional(longNumber)
+      "imgKeys" -> optional(text),
+      "status" -> number,
+      "upCount" -> number,
+      "downCount" -> number,
+      "userId" -> longNumber,
+      "publisher" -> optional(longNumber)
     )(Book.apply)(Book.unapply)
   )
-
   // lets create another Form which will be used to ADD new book
 
-  val addBookForm = Form(
+  val devAddBookForm = Form(
     mapping(
-      "name" -> nonEmptyText,
+      "title" -> nonEmptyText,
+      "author" -> nonEmptyText,
+      "description" -> nonEmptyText,
       "price" -> longNumber,
-      "author" -> optional(text),
-      "description" -> optional(text),
       // i should test this in test frame, this particular case
       // when user try to submit more than 5 pics, which is considered as an attack.
       "pictures" -> Forms.list(text).verifying("more than 5 pictures detected", list => list.size <= 5),
-      "reserved" -> optional(boolean),
       "publisher" -> optional(longNumber),
-    )(BookFormData.apply)(BookFormData.unapply)
+    )(DevBookFormData.apply)(DevBookFormData.unapply)
   )
 
   val loginForm = Form(
@@ -63,5 +66,11 @@ object AppForms {
       verifying ("Passwords are not matching", fields => fields match {
       case UserRegisterFormData(_,_, pw, rePw) => pw == rePw
     })
+  )
+
+  val addCommentForm = Form(
+    single(
+      "content" -> nonEmptyText
+    )
   )
 }

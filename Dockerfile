@@ -11,4 +11,4 @@ COPY ./target/universal/dist /app
 EXPOSE 8080
 
 # run /app/bin/book-store executable in port 8080
-CMD bash /app/bin/book-store -Dhttp.port=8080
+CMD bash /app/bin/book-store -Dhttp.port=8080 -Ddb.default.database=test -Ddb.default.username=postgres -Ddb.default.password=postgrespwtest -Ddb.default.host=postgreshost:5432

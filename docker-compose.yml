@@ -4,9 +4,9 @@ services:
   postgresql:
     image: postgres:latest
     environment:
-      POSTGRES_DB: postgres
+      POSTGRES_DB: test
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
+      POSTGRES_PASSWORD: postgrespwtest
     ports:
       - "5555:5432"
 

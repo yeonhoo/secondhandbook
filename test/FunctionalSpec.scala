@@ -20,7 +20,7 @@ import play.api.{Configuration, Logger}
 
 class FunctionalSpec extends PlaySpec with GuiceOneAppPerSuite with ScalaFutures with PostgresDataHandlerSpec with EssentialActionCaller with Writeables {
 
-  implicit val materializer = app.injector.instanceOf[Materializer]
+  implicit lazy val materializer = app.injector.instanceOf[Materializer]
   def homeController = app.injector.instanceOf(classOf[MainController])
 
   //implicit val sys = ActorSystem("MyTest")
@@ -340,7 +340,7 @@ class FunctionalSpec extends PlaySpec with GuiceOneAppPerSuite with ScalaFutures
         .withCSRFToken
 
 
-      bookForm.bindFromRequest()(request.withBody()).fold(
+      devBookForm.bindFromRequest()(request.withBody()).fold(
         formWithErrors => {
 
           Logger.info(formWithErrors.data.toString())
@@ -352,7 +352,7 @@ class FunctionalSpec extends PlaySpec with GuiceOneAppPerSuite with ScalaFutures
           1 mustBe 1
         },
         data => {
-          Logger.info(s"name => ${data.name}")
+          Logger.info(s"name => ${data.title}")
           Logger.info(s"price => ${data.price}")
           1 mustBe 1
         }

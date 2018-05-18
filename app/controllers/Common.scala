@@ -31,8 +31,6 @@ trait Common extends MessagesAbstractController {
 
   val NotFoundPage = Redirect(routes.MainController.notFound)
 
-
-
   private def onUnauthorized(request: RequestHeader) = Results.Redirect(routes.MainController.login)
 
   def isAuthenticatedAsync(f: => (String, String, String) => MessagesRequest[AnyContent] => Future[Result]) = Security.Authenticated(userInfo, onUnauthorized) { user =>
